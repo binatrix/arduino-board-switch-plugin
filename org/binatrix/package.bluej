@@ -1,0 +1,26 @@
+#BlueJ package file
+objectbench.height=93
+objectbench.width=761
+package.divider.horizontal=0.6
+package.divider.vertical=0.8007968127490039
+package.editor.height=395
+package.editor.width=654
+package.editor.x=80
+package.editor.y=80
+package.frame.height=600
+package.frame.width=800
+package.numDependencies=0
+package.numTargets=1
+package.showExtends=true
+package.showUses=true
+readme.height=58
+readme.name=@README
+readme.width=47
+readme.x=10
+readme.y=10
+target1.height=62
+target1.name=arduino
+target1.type=PackageTarget
+target1.width=80
+target1.x=191
+target1.y=163
