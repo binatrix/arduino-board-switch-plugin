@@ -30,6 +30,6 @@ To hide boards first select the new menu entry and then select the platform you 
 
 It was tested on the Arduino 1.18.10 version.
 
-To compile you need BlueJ, Eclipse or similar IDE.
+To compile you need BlueJ 4.1.4 or earlier (Java 8).
 
 Hope this tools helps you.
