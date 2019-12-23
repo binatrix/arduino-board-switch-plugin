@@ -3,11 +3,11 @@
 Arduino plugin that allows you to select only the boards you want to see in the IDE. It works using the undocumented ".hide=" attribute in the "boards.txt" file that hides a board.
 
 ## Installation
-- Download the "JAR" file from de [releases page](../../releases/latest) folder. 
+- Download the "JAR" file from the [releases page](../../releases/latest) folder. 
 - Open the "Tools" folder of your sketchbook folder. If this folder not exists please create.
 - Inside the "Tools" folder create a new folder named "ArduinoBoardSwitch".
 - Inside the "ArduinoBoardSwitch" create another folder named "tool".
-- Finally, copy the JAR file inside this last folder.
+- Finally, copy the "JAR" file inside this last folder.
 
 Example:
 ```
