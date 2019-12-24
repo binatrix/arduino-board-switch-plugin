@@ -19,7 +19,7 @@ import processing.app.debug.TargetPlatform;
  * Main arduino class implementing a new menu tool.
  * 
  * @author (Binatrix) 
- * @version (1.0)
+ * @version (1.1)
  */
 public class ArduinoBoardSwitch implements Tool {
     Editor editor;
@@ -41,16 +41,20 @@ public class ArduinoBoardSwitch implements Tool {
     public void run() {
         JFrame frame = new JFrame("Arduino Board Switch");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    editor.statusNotice("Arduino Board Switch plugin closed");
+                }
+            });
 
         jlist = new JScrollPane();
 
         JButton button = new JButton("Save changes");
         button.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     saveBoard(boardFile);
-                    MessageBox("Changes saved");
                 }
             });
 
@@ -76,10 +80,6 @@ public class ArduinoBoardSwitch implements Tool {
         frame.setVisible(true);
     }
 
-    void MessageBox (String message) {
-        JOptionPane.showMessageDialog(editor, message);
-    }
-
     BoardInfo findBoardByTag(List<BoardInfo> boards, String tag) {
         for (BoardInfo b : boards) {
             if (b.getTag().equals(tag)) {
@@ -93,6 +93,7 @@ public class ArduinoBoardSwitch implements Tool {
         boards.clear();
         lines.clear();
         boardFile = file;
+        editor.statusNotice("File " + file + " loaded");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -125,7 +126,7 @@ public class ArduinoBoardSwitch implements Tool {
         }
         catch (Exception e)
         {
-            MessageBox(e.getMessage());
+            editor.statusError(e.getMessage());
         }
     }
 
@@ -155,10 +156,11 @@ public class ArduinoBoardSwitch implements Tool {
             }
 
             w.close();
+            editor.statusNotice("Changes saved!");
         }
         catch (Exception e)
         {
-            MessageBox(e.getMessage());
+            editor.statusError(e.getMessage());
         }
     }
 
@@ -172,6 +174,7 @@ public class ArduinoBoardSwitch implements Tool {
 
             }
         }  
+        editor.statusNotice("Found " + files.size() + " platforms");
         return files.toArray(new String[files.size()]);
     }
 
