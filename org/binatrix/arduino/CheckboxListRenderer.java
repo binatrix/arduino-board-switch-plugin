@@ -3,6 +3,9 @@ package org.binatrix.arduino;
 import java.awt.Component;
 import javax.swing.*;
 
+/**
+ * Class to paint the list of checkboxes
+ */
 public class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<CheckboxListItem> {
 
     @Override

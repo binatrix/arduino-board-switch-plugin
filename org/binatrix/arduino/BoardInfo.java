@@ -1,5 +1,8 @@
 package org.binatrix.arduino;
 
+/**
+ * Class to manage the board visibility
+ */
 public class BoardInfo {
     private String tag;
     private String name;

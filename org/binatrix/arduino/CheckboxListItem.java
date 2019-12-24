@@ -1,5 +1,8 @@
 package org.binatrix.arduino;
 
+/**
+ * Class of a checkbox list item
+ */
 public class CheckboxListItem {
     private String label;
     private String tag;

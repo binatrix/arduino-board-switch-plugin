@@ -16,10 +16,10 @@ import processing.app.debug.TargetPackage;
 import processing.app.debug.TargetPlatform;
 
 /**
- * Write a description of class ArduinoBoardsManager here.
+ * Main arduino class implementing a new menu tool.
  * 
  * @author (Binatrix) 
- * @version (ALFA-1)
+ * @version (1.0)
  */
 public class ArduinoBoardSwitch implements Tool {
     Editor editor;
