@@ -8,8 +8,7 @@ public class CheckboxListItem {
     private String tag;
     private boolean isSelected = false;
 
-    public CheckboxListItem(String label, String tag, boolean isSelected) {
-        this.label = label;
+    public CheckboxListItem(String tag, boolean isSelected) {
         this.tag = tag;
         this.isSelected = isSelected;
     }
@@ -24,6 +23,10 @@ public class CheckboxListItem {
 
     public String getTag() {
         return tag;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String toString() {

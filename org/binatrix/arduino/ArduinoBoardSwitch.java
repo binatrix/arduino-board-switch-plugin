@@ -1,8 +1,5 @@
 package org.binatrix.arduino;
 
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -24,7 +21,7 @@ import processing.app.debug.TargetPlatform;
 public class ArduinoBoardSwitch implements Tool {
     Editor editor;
     List<String> lines = new ArrayList<String>();
-    List<BoardInfo> boards = new ArrayList<BoardInfo>();
+    List<CheckboxListItem> boards = new ArrayList<CheckboxListItem>();
     JScrollPane jlist;
     JList<CheckboxListItem> list;
     String boardFile;
@@ -80,8 +77,8 @@ public class ArduinoBoardSwitch implements Tool {
         frame.setVisible(true);
     }
 
-    BoardInfo findBoardByTag(List<BoardInfo> boards, String tag) {
-        for (BoardInfo b : boards) {
+    CheckboxListItem findBoardByTag(List<CheckboxListItem> boards, String tag) {
+        for (CheckboxListItem b : boards) {
             if (b.getTag().equals(tag)) {
                 return b;
             }
@@ -105,20 +102,20 @@ public class ArduinoBoardSwitch implements Tool {
                     int pos = line.indexOf(".");
                     if (pos > 0) {
                         String tag = line.substring(0, pos);
-                        BoardInfo board = findBoardByTag(boards, tag);
+                        CheckboxListItem board = findBoardByTag(boards, tag);
                         if (board == null)
                         {
-                            boards.add(new BoardInfo(tag, true));
+                            boards.add(new CheckboxListItem(tag, true));
                             board = findBoardByTag(boards, tag);
                         }
                         if (line.startsWith(board.getTag() + ".name"))
                         {
                             String value = line.substring(line.indexOf("=") + 1);
-                            board.setName(value);
+                            board.setLabel(value);
                         }
                         if (line.startsWith(board.getTag() + ".hide"))
                         {
-                            board.setVisible(false);
+                            board.setSelected(false);
                         }
                     }
                 }
@@ -181,12 +178,8 @@ public class ArduinoBoardSwitch implements Tool {
     @SuppressWarnings("unchecked")
     void loadList (String file) {
         getBoards(file);
-        List<CheckboxListItem> items = new ArrayList<CheckboxListItem>();
-        for(BoardInfo b: boards) {
-            items.add(new CheckboxListItem(b.getName(), b.getTag(), b.getVisible()));
-        }
 
-        list = new JList<CheckboxListItem>(items.toArray(new CheckboxListItem[items.size()]));
+        list = new JList<CheckboxListItem>(boards.toArray(new CheckboxListItem[boards.size()]));
         list.setCellRenderer(new CheckboxListRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseAdapter() {
@@ -201,7 +194,7 @@ public class ArduinoBoardSwitch implements Tool {
         jlist.setViewportView(list);
     }
 
-    public static void main(String args[]) {
+    public static void main() {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     ArduinoBoardSwitch s = new ArduinoBoardSwitch();
