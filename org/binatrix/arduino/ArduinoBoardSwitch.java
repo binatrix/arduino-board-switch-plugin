@@ -36,7 +36,7 @@ public class ArduinoBoardSwitch implements Tool {
 
     @SuppressWarnings("unchecked")
     public void run() {
-        JFrame frame = new JFrame("Arduino Board Switch");
+        JDialog frame = new JDialog(editor, "Arduino Board Switch", true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
                 @Override
