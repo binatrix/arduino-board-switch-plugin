@@ -21,7 +21,7 @@ If all works and you start Arduino IDE you must see a new entry menu in your "To
 
 ## Using
 
-To hide boards first select the new menu entry and then select the platform you want to modify from the top list and then simply unselect the boards you want to hide. To finish press the "Save Changes" button and the restart Arduino to the changes take effect because Arduino only reads the boards information when loads.
+To hide boards first select the new menu entry and then select the platform you want to modify from the top list and then simply unselect the boards you want to hide. To finish press the "Save Changes" button and **then restart Arduino to changes take effect because Arduino only reads the boards information when loads**.
 
 ![Alt text](/screen1.png?raw=true "plugin running")
 
