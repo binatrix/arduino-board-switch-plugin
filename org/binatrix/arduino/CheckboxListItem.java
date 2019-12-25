@@ -8,8 +8,9 @@ public class CheckboxListItem {
     private String tag;
     private boolean isSelected = false;
 
-    public CheckboxListItem(String tag, boolean isSelected) {
+    public CheckboxListItem(String tag, String label, boolean isSelected) {
         this.tag = tag;
+        this.label = label;
         this.isSelected = isSelected;
     }
 

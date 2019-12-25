@@ -11,17 +11,17 @@ import processing.app.tools.Tool;
 import processing.app.BaseNoGui;
 import processing.app.debug.TargetPackage;
 import processing.app.debug.TargetPlatform;
+import processing.app.debug.TargetBoard;
+import processing.app.helpers.PreferencesMap;
 
 /**
  * Main arduino class implementing a new menu tool.
  * 
  * @author (Binatrix) 
- * @version (1.1)
+ * @version (1.2)
  */
 public class ArduinoBoardSwitch implements Tool {
     Editor editor;
-    List<String> lines = new ArrayList<String>();
-    List<CheckboxListItem> boards = new ArrayList<CheckboxListItem>();
     JScrollPane jlist;
     JList<CheckboxListItem> list;
     String boardFile;
@@ -55,18 +55,18 @@ public class ArduinoBoardSwitch implements Tool {
                 }
             });
 
-        String[] platforms = listPlatforms();
+        Platform[] platforms = listPlatforms();
         JComboBox combo = new JComboBox();
-        for(String p: platforms) {
+        for(Platform p: platforms) {
             combo.addItem(p);
         }
         combo.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    loadList(combo.getSelectedItem().toString());
+                    loadList((Platform)combo.getSelectedItem());
                 }
             });
-        loadList(combo.getSelectedItem().toString());
+        loadList((Platform)combo.getSelectedItem());
 
         Container pane = frame.getContentPane();
         pane.add(combo, BorderLayout.PAGE_START);
@@ -77,20 +77,37 @@ public class ArduinoBoardSwitch implements Tool {
         frame.setVisible(true);
     }
 
-    CheckboxListItem findBoardByTag(List<CheckboxListItem> boards, String tag) {
-        for (CheckboxListItem b : boards) {
-            if (b.getTag().equals(tag)) {
-                return b;
+    CheckboxListItem[] getBoards(Platform platform) {
+        List<CheckboxListItem> boards = new ArrayList<CheckboxListItem>();
+        boardFile = platform.getPath();
+        editor.statusNotice("File " + boardFile + " loaded");
+
+        try {
+            TargetPackage targetPackage = BaseNoGui.getTargetPackage(platform.getPackageId());
+            if (targetPackage == null) 
+                throw new Exception("Package " + targetPackage.getId() + " not found");
+            TargetPlatform targetPlatform = targetPackage.get(platform.getId());
+            if (targetPlatform == null) 
+                throw new Exception("Platform " + platform.getId() + " not found");
+            for (TargetBoard board : targetPlatform.getBoards().values()) {
+                String tag = board.getId();
+                String name = board.getName();
+                PreferencesMap pref = board.getPreferences();
+                String hide = pref.get("hide");
+                boolean visible = (hide == null || hide.equals(""));
+                boards.add(new CheckboxListItem(tag, name, visible));
             }
         }
-        return null;
+        catch (Exception e)
+        {
+            editor.statusError(e.getMessage());
+        }
+        return boards.toArray(new CheckboxListItem[boards.size()]);
     }
 
-    void getBoards(String file) {
-        boards.clear();
-        lines.clear();
-        boardFile = file;
-        editor.statusNotice("File " + file + " loaded");
+    void saveBoard(String file) {
+        List<String> lines = new ArrayList<String>();
+
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -98,47 +115,13 @@ public class ArduinoBoardSwitch implements Tool {
                 {
                     lines.add(line);
                 }
-                if (!line.startsWith("#") && !line.startsWith("menu")) {
-                    int pos = line.indexOf(".");
-                    if (pos > 0) {
-                        String tag = line.substring(0, pos);
-                        CheckboxListItem board = findBoardByTag(boards, tag);
-                        if (board == null)
-                        {
-                            boards.add(new CheckboxListItem(tag, true));
-                            board = findBoardByTag(boards, tag);
-                        }
-                        if (line.startsWith(board.getTag() + ".name"))
-                        {
-                            String value = line.substring(line.indexOf("=") + 1);
-                            board.setLabel(value);
-                        }
-                        if (line.startsWith(board.getTag() + ".hide"))
-                        {
-                            board.setSelected(false);
-                        }
-                    }
-                }
             }
         }
         catch (Exception e)
         {
             editor.statusError(e.getMessage());
         }
-    }
 
-    String[] getDirectories(String path) {
-        File file = new File(path);
-        String[] dirs = file.list(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File current, String name) {
-                        return new File(current, name).isDirectory();
-                    }
-                });
-        return dirs;
-    }
-
-    void saveBoard(String file) {
         try(FileWriter w = new FileWriter(file)) {
             for (String line :lines)
             {
@@ -161,25 +144,22 @@ public class ArduinoBoardSwitch implements Tool {
         }
     }
 
-    String[] listPlatforms() {
-        List<String> files = new ArrayList<String>();
+    Platform[] listPlatforms() {
+        List<Platform> files = new ArrayList<Platform>();
         for (TargetPackage targetPackage : BaseNoGui.packages.values()) {
             for (TargetPlatform targetPlatform : targetPackage.platforms()) {
-                String platformFolder = targetPlatform.getFolder().getAbsolutePath();
-                File f = new File(platformFolder, "boards.txt");
-                files.add(f.getAbsolutePath());
-
+                File f = new File(targetPlatform.getFolder(), "boards.txt");
+                files.add(new Platform (targetPackage.getId(), targetPlatform.getId(), f.getAbsolutePath()));
             }
         }  
         editor.statusNotice("Found " + files.size() + " platforms");
-        return files.toArray(new String[files.size()]);
+        return files.toArray(new Platform[files.size()]);
     }
 
     @SuppressWarnings("unchecked")
-    void loadList (String file) {
-        getBoards(file);
-
-        list = new JList<CheckboxListItem>(boards.toArray(new CheckboxListItem[boards.size()]));
+    void loadList (Platform platform) {
+        CheckboxListItem[] boards = getBoards(platform);
+        list = new JList<CheckboxListItem>(boards);
         list.setCellRenderer(new CheckboxListRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseAdapter() {
@@ -192,14 +172,5 @@ public class ArduinoBoardSwitch implements Tool {
                 }
             });
         jlist.setViewportView(list);
-    }
-
-    public static void main() {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    ArduinoBoardSwitch s = new ArduinoBoardSwitch();
-                    s.run();
-                }
-            });
     }
 }
