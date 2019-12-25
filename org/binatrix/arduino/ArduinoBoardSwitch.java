@@ -93,8 +93,8 @@ public class ArduinoBoardSwitch implements Tool {
                 String tag = board.getId();
                 String name = board.getName();
                 PreferencesMap pref = board.getPreferences();
-                boolean visible = new Boolean(pref.get("hide", "false"));
-                boards.add(new CheckboxListItem(tag, name, !visible));
+                boolean hidden = new Boolean(pref.get("hide", "false"));
+                boards.add(new CheckboxListItem(tag, name, !hidden));
             }
         }
         catch (Exception e)
