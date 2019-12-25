@@ -3,11 +3,12 @@
 Arduino plugin that allows you to select only the boards you want to see in the IDE. It works using the undocumented ".hide=" attribute in the "boards.txt" file that hides a board.
 
 ## Installation
-- Download the "JAR" file from the [releases page](../../releases/latest) folder. 
-- Open the "Tools" folder of your sketchbook folder. If this folder not exists please create.
+- Download the "arduino-board-switch.zip" file from the [releases page](../../releases/latest) folder. 
+- Extract the "arduino-board-switch.jar" file from the "arduino-board-switch.zip" file. 
+- Open the "Tools" folder of your sketchbook folder (File-Preferences-Sketchbook location). If this folder not exists please create.
 - Inside the "Tools" folder create a new folder named "ArduinoBoardSwitch".
 - Inside the "ArduinoBoardSwitch" create another folder named "tool".
-- Finally, copy the "JAR" file inside this last folder.
+- Finally, copy the "arduino-board-switch.jar" file inside this last folder.
 
 Example:
 ```
@@ -20,11 +21,9 @@ If all works and you start Arduino IDE you must see a new entry menu in your "To
 
 ## Using
 
-To hide boards first select the new menu entry and then select the platform you want to modify from the top list and then simply unselect the boards you want to hide. To finish press the "Save Changes" button.
+To hide boards first select the new menu entry and then select the platform you want to modify from the top list and then simply unselect the boards you want to hide. To finish press the "Save Changes" button and the restart Arduino to the changes take effect because Arduino only reads the boards information when loads.
 
 ![Alt text](/screen1.png?raw=true "plugin running")
-
- To see the changes you must restart Arduino IDE.
 
 ![Alt text](/screen2.png?raw=true "Arduino IDE screenshoot")
 
