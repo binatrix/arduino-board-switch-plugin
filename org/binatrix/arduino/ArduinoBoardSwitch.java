@@ -136,7 +136,7 @@ public class ArduinoBoardSwitch implements Tool {
             }
 
             w.close();
-            editor.statusNotice("Changes saved!");
+            editor.statusNotice("Changes saved! You must restart Arduino to changes take effect");
         }
         catch (Exception e)
         {
