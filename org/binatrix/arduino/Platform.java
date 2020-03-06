@@ -23,6 +23,6 @@ public class Platform
     }
 
     public String toString() {
-        return path;
+        return packageId; //path;
     }
 }
