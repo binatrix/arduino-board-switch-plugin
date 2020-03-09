@@ -21,15 +21,18 @@ import processing.app.helpers.PreferencesMap;
  * Main arduino class implementing a new menu tool.
  * 
  * @author (Binatrix) 
- * @version (1.3)
+ * @version (1.4)
  */
 public class ArduinoBoardSwitch implements Tool {
     Editor editor;
     JScrollPane jlist;
     JList<CheckboxListItem> list;
+    JLabel label2;
+    JCheckBox check2;
     String boardFile;
+    CheckboxListItem[] boards;
     private static final boolean ARDUINO = true;
-    private static final String VERSION = "1.3";
+    private static final String VERSION = "1.4";
 
     public void init(Editor editor) {
         this.editor = editor;
@@ -54,9 +57,10 @@ public class ArduinoBoardSwitch implements Tool {
             });
 
         jlist = new JScrollPane();
+        JList combo = new JList();
 
-        JButton button = new JButton("Save changes");
-        button.addActionListener(new ActionListener() {
+        JButton button1 = new JButton("Save changes");
+        button1.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (ARDUINO) {
@@ -65,12 +69,42 @@ public class ArduinoBoardSwitch implements Tool {
                 }
             });
 
+        JCheckBox check1 = new JCheckBox("Check all/none");
+        check1.addItemListener(new ItemListener() {
+
+                public void itemStateChanged(ItemEvent e) {
+                    int est = e.getStateChange();
+                    int len = list.getModel().getSize();
+                    for(int i=0; i<len; i++) {
+                        CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(i);
+                        item.setSelected(est == 1);
+                        list.repaint(list.getCellBounds(i, i));
+                        checkBoard(item);
+                    }
+                }
+            });
+
+        check2 = new JCheckBox("Show visible/all");
+        check2.addItemListener(new ItemListener() {
+
+                public void itemStateChanged(ItemEvent e) {
+                    loadList((Platform)combo.getSelectedValue());
+                }
+            });
+
+        JLabel label1 = new JLabel("Platforms");
+        label1.setFont(new Font(null, Font.BOLD, 18));
+        label1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        label2 = new JLabel("Boards");
+        label2.setFont(new Font(null, Font.BOLD, 18));
+        label2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
         Platform[] platforms = listPlatforms();
         DefaultListModel dlm = new DefaultListModel();
         for(Platform p: platforms) {
             dlm.addElement(p);
         }
-        JList combo = new JList();
         combo.setModel(dlm);
         combo.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
@@ -108,32 +142,24 @@ public class ArduinoBoardSwitch implements Tool {
         loadList((Platform)combo.getSelectedItem());
          */
 
-        JCheckBox check = new JCheckBox("Check all/none");
-        check.addItemListener(new ItemListener() {
-
-                public void itemStateChanged(ItemEvent e) {
-                    int est = e.getStateChange();
-                    int len = list.getModel().getSize();
-                    for(int i=0; i<len; i++) {
-                        CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(i);
-                        item.setSelected(est == 1);
-                        list.repaint(list.getCellBounds(i, i));
-                    }
-                }
-            });
-
         JPanel pane1 = new JPanel(new BorderLayout());
-        pane1.add(new JLabel("Platforms"), BorderLayout.NORTH);
+        pane1.add(label1, BorderLayout.NORTH);
         pane1.add(combo, BorderLayout.CENTER);
 
+        JPanel pane3 = new JPanel(new BorderLayout());
+        pane3.add(label2, BorderLayout.NORTH);
+        pane3.add(check1, BorderLayout.WEST);
+        pane3.add(check2, BorderLayout.EAST);
+
         JPanel pane2 = new JPanel(new BorderLayout());
-        pane2.add(check, BorderLayout.NORTH);
+        pane2.add(pane3, BorderLayout.NORTH);
         pane2.add(jlist, BorderLayout.CENTER);
+        pane2.add(button1, BorderLayout.SOUTH);
 
         Container pane = frame.getContentPane();
         pane.add(pane1, BorderLayout.WEST);
         pane.add(pane2, BorderLayout.CENTER);
-        pane.add(button, BorderLayout.SOUTH);
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -167,7 +193,7 @@ public class ArduinoBoardSwitch implements Tool {
         }
         else {
             boards.add(new CheckboxListItem("tag1", "Name 1", false));
-            boards.add(new CheckboxListItem("tag2", "Name 2", false));
+            boards.add(new CheckboxListItem("tag2", "Name 2", true));
             boards.add(new CheckboxListItem("tag3", "Name 3", false));
         }
         return boards.toArray(new CheckboxListItem[boards.size()]);
@@ -196,8 +222,8 @@ public class ArduinoBoardSwitch implements Tool {
                 w.write(line + "\n");
             }
 
-            for(int i = 0; i < list.getModel().getSize(); i++) {
-                CheckboxListItem item = list.getModel().getElementAt(i);
+            for(int i = 0; i < boards.length; i++) {
+                CheckboxListItem item = boards[i];
                 if (item.isSelected() == false) {
                     w.write(item.getTag() + ".hide=true\n");
                 }
@@ -225,14 +251,23 @@ public class ArduinoBoardSwitch implements Tool {
         }
         else {
             files.add(new Platform ("aaa", "aaa", "c:\\path1\\path2\\path3\\boards.txt"));
+            files.add(new Platform ("bbb", "bbb", "c:\\path1\\path2\\path4\\boards.txt"));
         }
         return files.toArray(new Platform[files.size()]);
     }
 
     @SuppressWarnings("unchecked")
     void loadList (Platform platform) {
-        CheckboxListItem[] boards = getBoards(platform);
-        list = new JList<CheckboxListItem>(boards);
+        boards = getBoards(platform);
+        java.util.List<CheckboxListItem> temp_array = new ArrayList<CheckboxListItem>();
+        boolean visible = check2.isSelected();
+        for(int i=0; i<boards.length; i++) {
+            boolean hidden = !boards[i].isSelected();
+            if ((visible && !hidden) || !visible) {
+                temp_array.add(boards[i]);
+            }
+        }
+        list = new JList<CheckboxListItem>(temp_array.toArray(new CheckboxListItem[temp_array.size()]));
         list.setCellRenderer(new CheckboxListRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseAdapter() {
@@ -242,9 +277,19 @@ public class ArduinoBoardSwitch implements Tool {
                     CheckboxListItem item = (CheckboxListItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
                     list.repaint(list.getCellBounds(index, index));
+                    checkBoard(item);
                 }
             });
         jlist.setViewportView(list);
+        label2.setText("Boards for platform \"" + platform.getPackageId() + "\"");
+    }
+
+    void checkBoard(CheckboxListItem item) {
+        for(int i=0; i<boards.length; i++) {
+            if (boards[i].getTag().equals(item.getTag())) {
+                boards[i].setSelected(item.isSelected());
+            }
+        }
     }
 
     public static void main () {
