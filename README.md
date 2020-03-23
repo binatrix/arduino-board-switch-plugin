@@ -15,6 +15,8 @@ Example:
 C:\Users\mchav\Documents\Arduino\Tools\ArduinoBoardSwitch\tool\arduino-board-switch.jar
 ```
 
+NOTE: In Linux the "tools" folder must be in lowercase (thanks @junderdo)
+
 If all works and you start Arduino IDE you must see a new entry menu in your "Tools" menu like this:
 
 ![Alt text](/screen3.png?raw=true "Arduino plugin menu")
